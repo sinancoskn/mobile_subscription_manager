@@ -14,6 +14,7 @@ class ControllerBase extends Controller
     public function beforeExecuteRoute(Dispatcher $dispatcher)
     {
         $clientToken = $this->request->getHeader('Authorization');
+
         if ($clientToken) {
             $tokenData = $this->validateClientToken($clientToken);
 

@@ -38,7 +38,6 @@ class ComposerStaticInit518b45e4651db8af9aa9728fdcaa457f
         'P' => 
         array (
             'PhpOption\\' => 10,
-            'PhpAmqpLib\\' => 11,
             'Phalcon\\Incubator\\Validation\\' => 29,
             'ParagonIE\\ConstantTime\\' => 23,
         ),
@@ -97,10 +96,6 @@ class ComposerStaticInit518b45e4651db8af9aa9728fdcaa457f
         'PhpOption\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
-        ),
-        'PhpAmqpLib\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-amqplib/php-amqplib/PhpAmqpLib',
         ),
         'Phalcon\\Incubator\\Validation\\' => 
         array (

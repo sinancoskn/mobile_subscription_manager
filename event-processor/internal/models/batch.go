@@ -8,16 +8,16 @@ import (
 )
 
 type Batch struct {
-	ID         int64      `gorm:"primaryKey"`
-	ActionID   int64      `gorm:"not null"`
-	StartIndex int64      `gorm:"not null"`
-	EndIndex   int64      `gorm:"not null"`
-	Status     string     `gorm:"default:pending"`
-	TryCount   int        `gorm:"not null"`
-	LockedBy   *string    `gorm:"default:null"`
-	LockedAt   *time.Time `gorm:"default:null"`
-	CreatedAt  time.Time  `gorm:"autoCreateTime"`
-	UpdatedAt  time.Time  `gorm:"autoUpdateTime"`
+	ID         int64      `gorm:"primaryKey" json:"id"`             // Primary key
+	ActionID   int64      `gorm:"not null" json:"action_id"`        // Related action ID
+	StartIndex int64      `gorm:"not null" json:"start_index"`      // Start index for the batch
+	EndIndex   int64      `gorm:"not null" json:"end_index"`        // End index for the batch
+	Status     string     `gorm:"default:pending" json:"status"`    // Batch status
+	TryCount   int        `gorm:"not null" json:"try_count"`        // Number of processing attempts
+	LockedBy   *string    `gorm:"default:null" json:"locked_by"`    // Worker that locked this batch
+	LockedAt   *time.Time `gorm:"default:null" json:"locked_at"`    // When the batch was locked
+	CreatedAt  time.Time  `gorm:"autoCreateTime" json:"created_at"` // Creation timestamp
+	UpdatedAt  time.Time  `gorm:"autoUpdateTime" json:"updated_at"` // Update timestamp
 }
 
 func NewBatchRepository(db *gorm.DB) *BatchRepository {
@@ -55,6 +55,22 @@ func (r *BatchRepository) CreateBatches(actionID int64, batchSize int64, totalRe
 
 	log.Printf("Inserted %d batches for action %d.\n", len(batches), actionID)
 	return nil
+}
+
+func (r *BatchRepository) GetBatchesByActionIDs(actionIDs []int64) ([]Batch, error) {
+	var batches []Batch
+	query := r.db.Model(&Batch{})
+
+	if len(actionIDs) > 0 {
+		query = query.Where("action_id IN ?", actionIDs)
+	}
+
+	err := query.Find(&batches).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return batches, nil
 }
 
 // LockNextBatch fetches and locks the next pending batch

@@ -114,7 +114,7 @@ func (r *SubscriptionRepository) GenerateMockSubscriptions(total int) error {
 		for j := 0; j < chunkSize && i+j < total; j++ {
 			subscriptions = append(subscriptions, Subscription{
 				UID:      uuid.New().String(),
-				AppID:    rand.Intn(100) + 1, // Random app_id between 1 and 100
+				AppID:    rand.Intn(4) + 1, // Random app_id between 1 and 100
 				Receipt:  fmt.Sprintf("receipt_%d", rand.Intn(1000000)),
 				Status:   statuses[rand.Intn(len(statuses))],             // Random status
 				ExpireAt: time.Now().UTC().AddDate(0, 0, -rand.Intn(30)), // Random expire_at in the past 30 days

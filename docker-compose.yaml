@@ -1,0 +1,88 @@
+version: '3.9'
+
+services:
+  purchase-api:
+    build:
+      context: ./purchase-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_DB=default_db
+      - POSTGRESQL_USER=root
+      - POSTGRESQL_PASS=root_password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - STORE_API_HOST=http://mock-receipt-api:1234
+      - TOKEN_SECRET=123qwe
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  event-processor:
+    build:
+      context: ./event-processor
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    environment:
+      - DATABASE_DSN=host=postgres user=root password=root_password dbname=default_db port=5432
+      - STORE_API_HOST=http://mock-receipt-api:1234
+      - MANAGER_PORT=9090
+      - MANAGER_HOST=127.0.0.1
+      - RABBITMQ_URL=amqp://admin:8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918@rabbitmq:5672/
+    depends_on:
+      - postgres
+      - rabbitmq
+    command: [
+      "./wait-for-it.sh", "postgres:5432", "--timeout=30", "--",
+      "./wait-for-it.sh", "rabbitmq:5672", "--timeout=30", "--",
+      "./start.sh"
+    ]
+
+  mock-receipt-api:
+    container_name: mock-receipt-api
+    build:
+      context: ./mock-receipt-api
+      dockerfile: Dockerfile
+    ports:
+      - "1234:1234"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root_password
+      - POSTGRES_DB=default_db
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    - ./init/postgresql:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ (AMQP)
+      - "15672:15672" # RabbitMQ Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_LOAD_DEFINITIONS=true
+    volumes:
+    - ./init/rabbitmq/rabbitmq-definitions.json:/opt/definitions.json:ro
+    - ./init/rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 5672 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

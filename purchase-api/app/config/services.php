@@ -89,17 +89,3 @@ $di->set('flash', function () {
 $di->setShared('storeApiService', function () {
     return new \App\Services\StoreApiService();
 });
-
-$di->setShared('queueService', function () {
-    $config = [
-        'host' => 'localhost',
-        'port' => 5672,
-        'username' => 'guest',
-        'password' => 'guest',
-    ];
-
-    $rabbitMQ = new \App\Services\Queue\RabbitMQQueue();
-    $rabbitMQ->connect($config);
-
-    return new \App\Services\Queue\QueueService($rabbitMQ);
-});

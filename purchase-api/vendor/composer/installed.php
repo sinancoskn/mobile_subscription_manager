@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '515d6dd3e46c1cdcce98197ce1ddd6124aa5fa1c',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '515d6dd3e46c1cdcce98197ce1ddd6124aa5fa1c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -70,15 +70,6 @@
             'reference' => '5f195c3aec72288ee45646132708ee151af89e52',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phalcon/incubator-validation',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'php-amqplib/php-amqplib' => array(
-            'pretty_version' => 'v3.7.2',
-            'version' => '3.7.2.0',
-            'reference' => '738a73eb0019b6c99d9bc25d7a0c0dd8f56a5199',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../php-amqplib/php-amqplib',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -159,12 +150,6 @@
             'install_path' => __DIR__ . '/../symfony/polyfill-php80',
             'aliases' => array(),
             'dev_requirement' => false,
-        ),
-        'videlalvaro/php-amqplib' => array(
-            'dev_requirement' => false,
-            'replaced' => array(
-                0 => 'v3.7.2',
-            ),
         ),
         'vlucas/phpdotenv' => array(
             'pretty_version' => 'v5.6.1',

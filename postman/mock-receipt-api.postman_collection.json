@@ -1,0 +1,65 @@
+{
+	"info": {
+		"_postman_id": "252a2bb9-d29f-4364-809b-2d94fe887de5",
+		"name": "mock-receipt-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7911751"
+	},
+	"item": [
+		{
+			"name": "validate_receipt",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"receipt\": \"example123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/validate-receipt",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"validate-receipt"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:1234",
+			"type": "string"
+		}
+	]
+}

@@ -6,19 +6,6 @@ class DevicesController extends ControllerBase
 
     public function registerAction()
     {
-        // error_log(print_r(getenv('POSTGRESQL_HOST'), true));
-
-        // $queueService = $this->di->get('queueService');
-
-        // $success = $queueService->publish('subscription_events', [
-        //     'event' => 'subscription_updated',
-        //     'uid' => '8f481bf7-e09e-45f4-8a71-1ecc3c987166',
-        //     'status' => 'started',
-        //     'app_id' => 1,
-        //     'timestamp' => time(),
-        // ]);
-
-
         $data = $this->request->getJsonRawBody();
 
         $device = new Devices();

@@ -34,7 +34,7 @@ func (s *WorkerService) Start() {
 	log.Printf("Worker started with ID: %s", s.workerID)
 
 	// Register the worker in the database
-	err := s.workerRepo.RegisterWorker(s.workerID)
+	worker, err := s.workerRepo.RegisterWorker(s.workerID)
 	if err != nil {
 		log.Fatalf("Failed to register worker: %v", err)
 	}
@@ -52,10 +52,16 @@ func (s *WorkerService) Start() {
 			log.Printf("Error fetching batch: %v", err)
 			time.Sleep(5 * time.Second) // Wait before retrying
 			continue
+		} else {
+			worker, _ = s.workerRepo.UpdateWorkerStatus(s.workerID, "processing", batch.ID)
 		}
 
 		// If no batch is available, wait and try again
 		if batch == nil {
+			if worker.Status == "running" {
+				worker, _ = s.workerRepo.UpdateWorkerStatus(s.workerID, "idle", 0)
+			}
+
 			log.Println("No available batches. Waiting...")
 			time.Sleep(5 * time.Second)
 			continue
@@ -91,6 +97,8 @@ func (s *WorkerService) Start() {
 				}
 			}
 		}
+
+		worker, _ = s.workerRepo.UpdateWorkerStatus(s.workerID, "idle", 0)
 	}
 }
 

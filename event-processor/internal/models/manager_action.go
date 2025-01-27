@@ -7,16 +7,17 @@ import (
 )
 
 type ManagerAction struct {
-	ID                   int64     `gorm:"primaryKey"`
-	ExpectedCount        int64     `gorm:"not null"`
-	WillBeProcessedCount int64     `gorm:"not null"`
-	MaxBatch             int       `gorm:"not null"`
-	BatchCount           int64     `gorm:"not null;default:0"` // Total number of batches
-	CompletedBatchCount  int       `gorm:"not null;default:0"` // Number of completed batches
-	TriggeredAt          time.Time `gorm:"not null"`
-	Status               string    `gorm:"size:20;default:pending"` // "pending", "running", "completed"
-	CreatedAt            time.Time `gorm:"autoCreateTime"`
-	UpdatedAt            time.Time `gorm:"autoUpdateTime"`
+	ID                   int64     `gorm:"primaryKey" json:"id"`
+	ExpectedCount        int64     `gorm:"not null" json:"expected_count"`
+	WillBeProcessedCount int64     `gorm:"not null" json:"will_be_processed_count"`
+	MaxBatch             int       `gorm:"not null" json:"max_batch"`
+	BatchCount           int64     `gorm:"not null;default:0" json:"batch_count"`           // Total number of batches
+	CompletedBatchCount  int       `gorm:"not null;default:0" json:"completed_batch_count"` // Number of completed batches
+	TriggeredAt          time.Time `gorm:"not null" json:"triggered_at"`
+	Status               string    `gorm:"size:20;default:pending" json:"status"` // "pending", "running", "completed"
+	CreatedAt            time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt            time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	Batches              []Batch   `gorm:"-" json:"batches"` // Non-Gorm field
 }
 
 func NewManagerActionRepository(db *gorm.DB) *ManagerActionRepository {

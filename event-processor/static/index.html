@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Manager Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900 font-sans">
+
+    <!-- Header -->
+    <header class="bg-gray-200 border-b border-gray-400 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-lg font-semibold">Worker Manager Dashboard</h1>
+            <button id="trigger-button" class="px-4 py-2 border border-gray-400 rounded bg-white hover:bg-gray-100">
+                Trigger Action
+            </button>
+        </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="container mx-auto mt-4">
+        <nav class="border-b border-gray-400 mb-4">
+            <button
+                class="tab-button px-4 py-2 text-gray-800 hover:bg-gray-200 border-b-2 border-transparent focus:border-gray-800">
+                Manager Actions
+            </button>
+            <button
+                class="tab-button px-4 py-2 text-gray-800 hover:bg-gray-200 border-b-2 border-transparent focus:border-gray-800">
+                Batches
+            </button>
+            <button
+                class="tab-button px-4 py-2 text-gray-800 hover:bg-gray-200 border-b-2 border-transparent focus:border-gray-800">
+                Workers
+            </button>
+        </nav>
+
+        <!-- Tab Content -->
+        <div id="tab-content">
+            <!-- Content for Manager Actions -->
+            <div class="tab-pane hidden" id="tab-actions">
+                <h2 class="text-lg font-semibold mb-4">Manager Actions</h2>
+                <div id="actions-data" class="bg-white p-4 border border-gray-400 rounded">
+                    <!-- Manager Actions will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Content for Batches -->
+            <div class="tab-pane hidden" id="tab-actions">
+                <h2 class="text-lg font-semibold mb-4">Batches</h2>
+                <div id="batches-data" class="bg-white p-4 border border-gray-400 rounded">
+                    <!-- Manager Actions will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Content for Workers -->
+            <div class="tab-pane hidden" id="tab-workers">
+                <h2 class="text-lg font-semibold mb-4">Workers</h2>
+                <div id="workers-data" class="bg-white p-4 border border-gray-400 rounded">
+                    <!-- Workers will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // UI LOGIC
+        document.getElementById("trigger-button").addEventListener("click", () => {
+            fetch("/trigger", { method: "POST" })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status === "success") {
+                        alert("Triggered successfully!");
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error triggering action:", error);
+                });
+        });
+
+        const tabs = document.querySelectorAll(".tab-button");
+        const tabPanes = document.querySelectorAll(".tab-pane");
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener("click", () => {
+                // Hide all tab panes
+                tabPanes.forEach((pane) => pane.classList.add("hidden"));
+                // Remove focus state from all tabs
+                tabs.forEach((t) => t.classList.remove("border-gray-800"));
+                // Show the selected tab pane and highlight the tab
+                tabPanes[index].classList.remove("hidden");
+                tab.classList.add("border-gray-800");
+            });
+        });
+
+        tabs[0].click();
+    </script>
+
+    <script>
+        // WebSocket logic
+        const socket = new WebSocket("{{.WebSocketURL}}");
+
+        socket.onopen = () => {
+            console.log("WebSocket connection established.");
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            // Render manager actions
+            renderManagerActions(data.actions || []);
+
+            // Render batches CHECK NULL
+            renderBatchesActions(data.actions[0].batches);
+
+            // Render workers
+            renderWorkers(data.workers || []);
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = () => {
+            console.log("WebSocket connection closed.");
+        };
+
+        // Render Manager Actions
+        function renderManagerActions(actions) {
+            const actionsContainer = document.getElementById("actions-data");
+            actionsContainer.innerHTML = ""; // Clear previous data
+
+            if (actions.length === 0) {
+                actionsContainer.innerHTML = "<p>No Manager Actions available.</p>";
+                return;
+            }
+
+            const table = document.createElement("table");
+            table.className = "table-auto w-full text-left border-collapse border border-gray-400";
+
+            // Table Header
+            const header = `
+              <thead>
+                <tr>
+                  <th class="border px-4 py-2">ID</th>
+                  <th class="border px-4 py-2">Status</th>
+                  <th class="border px-4 py-2">Batches Count</th>
+                  <th class="border px-4 py-2">Triggered At</th>
+                  <th class="border px-4 py-2">Completed</th>
+                </tr>
+              </thead>
+            `;
+            table.innerHTML = header;
+
+            // Table Body
+            const tbody = document.createElement("tbody");
+            actions.forEach((action) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                  <td class="border px-4 py-2">${action.id}</td>
+                  <td class="border px-4 py-2">${action.status}</td>
+                  <td class="border px-4 py-2">${action.batches.length}</td>
+                  <td class="border px-4 py-2">${new Date(action.triggered_at).toLocaleString()}</td>
+                  <td class="border px-4 py-2">${action.completed_batch_count}/${action.batch_count}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            actionsContainer.appendChild(table);
+        }
+
+        function renderBatchesActions(batches) {
+            const actionsContainer = document.getElementById("batches-data");
+            actionsContainer.innerHTML = ""; // Clear previous data
+
+            if (batches.length === 0) {
+                actionsContainer.innerHTML = "<p>No Manager Actions available.</p>";
+                return;
+            }
+
+            const table = document.createElement("table");
+            table.className = "table-auto w-full text-left border-collapse border border-gray-400";
+
+            // Table Header
+            const header = `
+              <thead>
+                <tr>
+                  <th class="border px-4 py-2">ID</th>
+                  <th class="border px-4 py-2">Status</th>
+                  <th class="border px-4 py-2">Range</th>
+                  <th class="border px-4 py-2">Try Count</th>
+                  <th class="border px-4 py-2">Locked By</th>
+                  <th class="border px-4 py-2">Locked At</th>
+                </tr>
+              </thead>
+            `;
+            table.innerHTML = header;
+
+            // Table Body
+            const tbody = document.createElement("tbody");
+            batches.forEach((batch) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                  <td class="border px-4 py-2">${batch.id}</td>
+                  <td class="border px-4 py-2">${batch.status}</td>
+                  <td class="border px-4 py-2">${batch.start_index} -${batch.end_index}</td>
+                  <td class="border px-4 py-2">${batch.try_count}</td>
+                  <td class="border px-4 py-2">${batch.locked_by}</td>
+                  <td class="border px-4 py-2">${new Date(batch.locked_at).toLocaleString()}</td>
+                  `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            actionsContainer.appendChild(table);
+        }
+
+        // Render Workers
+        function renderWorkers(workers) {
+            console.log(workers);
+            const workersContainer = document.getElementById("workers-data");
+            workersContainer.innerHTML = ""; // Clear previous data
+
+            if (workers.length === 0) {
+                workersContainer.innerHTML = "<p>No Workers available.</p>";
+                return;
+            }
+
+            const table = document.createElement("table");
+            table.className = "table-auto w-full text-left border-collapse border border-gray-400";
+
+            // Table Header
+            const header = `
+              <thead>
+                <tr>
+                  <th class="border px-4 py-2">Worker ID</th>
+                  <th class="border px-4 py-2">Status</th>
+                  <th class="border px-4 py-2">Last Heartbeat</th>
+                  <th class="border px-4 py-2">Current Batch ID</th>
+                </tr>
+              </thead>
+            `;
+            table.innerHTML = header;
+
+            // Table Body
+            const tbody = document.createElement("tbody");
+            workers.forEach((worker) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                  <td class="border px-4 py-2">${worker.worker_id}</td>
+                  <td class="border px-4 py-2">${worker.status}</td>
+                  <td class="border px-4 py-2">${new Date(worker.last_heartbeat).toLocaleString()}</td>
+                  <td class="border px-4 py-2">${worker.current_batch_id || "None"}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            workersContainer.appendChild(table);
+        }
+    </script>
+
+</body>
+
+</html>

@@ -12,18 +12,58 @@ type WorkerManagerService struct {
 	managerRepo         *models.ManagerActionRepository
 	batchRepo           *models.BatchRepository
 	subscriptionRepo    *models.SubscriptionRepository
+	workerRepo          *models.WorkerRepository
 	maxProcessableCount int64
 	maxBatch            int
 }
 
-func NewWorkerManagerService(managerRepo *models.ManagerActionRepository, batchRepo *models.BatchRepository, subscriptionRepo *models.SubscriptionRepository) *WorkerManagerService {
+func NewWorkerManagerService(
+	managerRepo *models.ManagerActionRepository,
+	batchRepo *models.BatchRepository,
+	subscriptionRepo *models.SubscriptionRepository,
+	workerRepo *models.WorkerRepository,
+) *WorkerManagerService {
 	return &WorkerManagerService{
 		managerRepo:         managerRepo,
 		batchRepo:           batchRepo,
 		subscriptionRepo:    subscriptionRepo,
+		workerRepo:          workerRepo,
 		maxProcessableCount: 1000000,
 		maxBatch:            100,
 	}
+}
+
+func (s *WorkerManagerService) GetActiveWorkers() ([]models.Worker, error) {
+	return s.workerRepo.GetActiveWorkers()
+}
+
+func (s *WorkerManagerService) GetActiveActions() ([]models.ManagerAction, error) {
+	// Fetch active actions
+	actions, err := s.managerRepo.GetActiveActions()
+	if err != nil {
+		return nil, err
+	}
+
+	actionIDs := make([]int64, len(actions))
+	for i, action := range actions {
+		actionIDs[i] = action.ID
+	}
+
+	batches, err := s.batchRepo.GetBatchesByActionIDs(actionIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	batchesByActionID := make(map[int64][]models.Batch)
+	for _, batch := range batches {
+		batchesByActionID[batch.ActionID] = append(batchesByActionID[batch.ActionID], batch)
+	}
+
+	for i := range actions {
+		actions[i].Batches = batchesByActionID[actions[i].ID]
+	}
+
+	return actions, nil
 }
 
 // Heartbeat checks the status of active manager actions periodically

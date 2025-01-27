@@ -1,0 +1,56 @@
+{
+	"info": {
+		"_postman_id": "1965a390-505f-494e-b86d-1b2b5825fc9a",
+		"name": "event-processor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7911751"
+	},
+	"item": [
+		{
+			"name": "trigger",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/trigger",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"trigger"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:9090",
+			"type": "string"
+		}
+	]
+}
