@@ -180,3 +180,24 @@ This folder contains Postman collections and environments for the project. Use t
 - Integrate CI/CD pipelines for automated testing and deployment.
 - Extend mock APIs to simulate edge cases.
 
+---
+
+## **What Could We Have Used?**
+
+1. **Cloud Functions**:
+   - Worker Manager introduces extra complexity. Instead, a cloud function could have been used to create tasks, and multiple workers could process these tasks.
+
+2. **Kubernetes for Workers**:
+   - Workers are designed to run across multiple pods in Kubernetes. Additionally, a similar system could have been created for the callback system to invoke third-party webhooks using the same structure.
+
+3. **Callback System Alternatives**:
+   - The callback system listens to RabbitMQ. Instead, it could have been implemented like a worker leveraging Go's concurrency features. However, this approach was used as a showcase.
+
+4. **Message Queue Flexibility**:
+   - In PHP Phalcon, a generic message queue structure is used, allowing easy replacement of the message queue. However, the Go code only supports RabbitMQ.
+
+5. **Using Go Instead of PHP**:
+   - The entire system could have been written in Go, which might make it more readable and performant.
+
+
+
