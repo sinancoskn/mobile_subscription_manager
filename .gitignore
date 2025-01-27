@@ -1,0 +1,64 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+
+# PHP
+/vendor/
+/composer.lock
+.env
+
+# Phalcon-specific
+/cache/*
+/logs/*
+*.volt.php
+*.php~ 
+
+# Golang
+/bin/
+/pkg/
+/build/
+/vendor/
+/go.sum
+go.work
+go.work.sum
+
+# Ignore binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+*.a
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Docker
+*.env
+*.env.*
+docker-compose.override.yml
+.dockerignore
+
+# IDE/Editor-specific
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Test Coverage/Debugging
+coverage.out
+*.test
+
+# Node.js (if used in your project)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore OS-specific files
+*.DS_Store
