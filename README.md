@@ -154,18 +154,29 @@ MANAGER_PORT=9090
 
 ---
 
+# Postman Collections
+
+This folder contains Postman collections and environments for the project. Use these files to test and interact with the APIs.
+
+## Files
+- `purchase-api.postman_collection.json`: Collection for Purchase API.
+- `event-processor.postman_collection.json`: Collection for Event Processor API.
+- `mock-receipt-api.postman_collection.json`: Collection for mock API.
+
+## How to Import
+1. Open Postman.
+2. Go to **File > Import**.
+3. Select the `.json` file you want to import.
+4. Use the imported collection to test the corresponding API.
+
+## Notes
+- Ensure the API services are running locally or in Docker before testing.
+- Update the environment file (`environment.json`) to match your local setup.
+
+---
+
 ## **Future Improvements**
 - Add monitoring and alerting (e.g., Prometheus, Grafana).
 - Integrate CI/CD pipelines for automated testing and deployment.
 - Extend mock APIs to simulate edge cases.
-
----
-
-## **Contributing**
-Feel free to submit issues and pull requests. Contributions are welcome!
-
----
-
-## **License**
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
